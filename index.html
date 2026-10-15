@@ -1,0 +1,511 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Кабинет тёмных существ</title>
+
+  <script type="module"
+    src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js">
+  </script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    :root {
+      color-scheme: dark;
+      --orange: #ffad66;
+      --muted: #aaa0b6;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: #f6edf8;
+      background:
+        radial-gradient(ellipse at 75% 40%, #362044 0%, transparent 55%),
+        #100d16;
+      font-family: Arial, sans-serif;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        radial-gradient(circle, #ffffff25 1px, transparent 1px);
+      background-size: 65px 65px;
+      opacity: 0.35;
+    }
+
+    .page {
+      max-width: 1280px;
+      margin: auto;
+      padding: 0 40px;
+      position: relative;
+    }
+
+    header {
+      min-height: 95px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      border-bottom: 1px solid #ffffff18;
+    }
+
+    .brand {
+      font-size: 12px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+
+    .brand span {
+      color: var(--orange);
+      margin-right: 10px;
+      font-size: 23px;
+    }
+
+    .edition {
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    main {
+      min-height: 680px;
+      display: grid;
+      grid-template-columns: 0.85fr 1.15fr;
+      align-items: center;
+      gap: 20px;
+      padding: 45px 0;
+    }
+
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--orange);
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 34px;
+      height: 1px;
+      background: var(--orange);
+    }
+
+    h1 {
+      font-family: Georgia, serif;
+      font-size: clamp(56px, 6.5vw, 92px);
+      font-weight: normal;
+      line-height: 0.98;
+      letter-spacing: -3px;
+      margin: 28px 0;
+    }
+
+    h1 em {
+      color: var(--orange);
+      font-weight: normal;
+    }
+
+    .description {
+      max-width: 370px;
+      color: var(--muted);
+      line-height: 1.85;
+      font-size: 15px;
+    }
+
+    .details {
+      display: flex;
+      gap: 35px;
+      margin: 34px 0;
+      padding-top: 24px;
+      border-top: 1px solid #ffffff18;
+      max-width: 370px;
+    }
+
+    .details strong {
+      display: block;
+      font: normal 26px Georgia, serif;
+      margin-bottom: 7px;
+    }
+
+    .details span {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .note {
+      color: #8f829e;
+      font-size: 12px;
+      line-height: 1.7;
+      max-width: 330px;
+    }
+
+    .exhibit {
+      position: relative;
+      min-width: 0;
+    }
+
+    .stage {
+      position: relative;
+      height: 510px;
+      isolation: isolate;
+    }
+
+    .halo {
+      position: absolute;
+      width: 370px;
+      height: 370px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border: 1px solid #bf8add25;
+      border-radius: 50%;
+      background: radial-gradient(circle, #a26dbb12, transparent 70%);
+      box-shadow: 0 0 100px #9251ba15;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .halo::after {
+      content: "";
+      position: absolute;
+      inset: 25px;
+      border: 1px dashed #bf8add20;
+      border-radius: 50%;
+    }
+
+    .number {
+      position: absolute;
+      top: 15px;
+      right: 10px;
+      color: #ffffff10;
+      font: 110px Georgia, serif;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    model-viewer {
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      --poster-color: transparent;
+    }
+
+    button {
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 5px;
+    }
+
+    .control {
+      padding: 12px 18px;
+      border: 1px solid #ffffff25;
+      border-radius: 30px;
+      background: #ffffff05;
+      color: #e5dbea;
+      font-size: 12px;
+    }
+
+    .control:hover {
+      background: #ffffff10;
+      border-color: #ffad6680;
+    }
+
+    .ar-button {
+      position: absolute;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: max-content;
+      max-width: 95%;
+      padding: 13px 22px;
+      border: none;
+      border-radius: 30px;
+      background: var(--orange);
+      color: #211426;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .ar-button:hover {
+      background: #ffc38e;
+    }
+
+    button:focus-visible,
+    a:focus-visible {
+      outline: 2px solid var(--orange);
+      outline-offset: 5px;
+    }
+
+    .status {
+      min-height: 20px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.6;
+      margin-top: 17px;
+    }
+
+    footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 22px 0;
+      border-top: 1px solid #ffffff18;
+      color: #8f829e;
+      font-size: 11px;
+      line-height: 1.7;
+    }
+
+    footer a {
+      color: var(--orange);
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 800px) {
+      .page {
+        padding: 0 22px;
+      }
+
+      header {
+        min-height: 80px;
+      }
+
+      .brand {
+        font-size: 10px;
+        letter-spacing: 1.5px;
+      }
+
+      .edition {
+        font-size: 9px;
+        letter-spacing: 1px;
+      }
+
+      main {
+        grid-template-columns: 1fr;
+        padding: 40px 0 25px;
+      }
+
+      h1 {
+        font-size: clamp(52px, 12vw, 76px);
+        letter-spacing: -2px;
+      }
+
+      .description,
+      .details,
+      .note {
+        max-width: none;
+      }
+
+      .stage {
+        height: 430px;
+      }
+
+      .halo {
+        width: 280px;
+        height: 280px;
+      }
+
+      footer {
+        flex-direction: column;
+        gap: 6px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      button {
+        transition: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+    <header>
+      <div class="brand">
+        <span>✦</span> Кабинет тёмных существ
+      </div>
+      <div class="edition">Хэллоуин / Коллекция</div>
+    </header>
+
+    <main>
+      <section>
+        <div class="eyebrow">Экспонат № 01</div>
+
+        <h1>Костяной<br><em>дракон</em></h1>
+
+        <p class="description">
+          Говорят, он просыпается раз в году, когда ночь
+          становится длиннее, а граница между мирами — тоньше.
+          От прежнего величия остались лишь кости,
+          крылья и привычка охранять свои тайны.
+        </p>
+
+        <div class="details">
+          <div>
+            <strong>Нежить</strong>
+            <span>класс существа</span>
+          </div>
+          <div>
+            <strong>360°</strong>
+            <span>обзор экспоната</span>
+          </div>
+          <div>
+            <strong>GLB</strong>
+            <span>формат модели</span>
+          </div>
+        </div>
+
+        <p class="note">
+          Исследуйте экспонат: перетаскивайте для вращения,
+          используйте колесо мыши для приближения.
+          На телефоне — жест двумя пальцами.
+        </p>
+      </section>
+
+      <section class="exhibit" aria-label="Интерактивная модель дракона">
+        <div class="stage">
+          <div class="halo" aria-hidden="true"></div>
+          <div class="number" aria-hidden="true">01</div>
+
+          <model-viewer
+            id="dragon"
+            src="assets/model.glb"
+            alt="Белый скелетный дракон с крыльями и длинным хвостом"
+            camera-controls
+            auto-rotate
+            rotation-per-second="12deg"
+            auto-rotate-delay="1000"
+            camera-orbit="25deg 75deg auto"
+            shadow-intensity="1"
+            shadow-softness="1"
+            exposure="0.9"
+            environment-image="neutral"
+            touch-action="pan-y"
+            ar
+            ar-modes="webxr scene-viewer quick-look">
+
+            <button class="ar-button" slot="ar-button">
+              Призвать в свой мир · AR
+            </button>
+          </model-viewer>
+        </div>
+
+        <div class="controls">
+          <button
+            class="control"
+            id="rotation"
+            aria-pressed="true">
+            Остановить вращение
+          </button>
+
+          <button class="control" id="reset">
+            Вернуть ракурс
+          </button>
+        </div>
+
+        <p class="status" id="status" role="status" aria-live="polite">
+          Пробуждаем дракона…
+        </p>
+      </section>
+    </main>
+
+    <footer>
+      <span>Учебный проект · XR-технологии · Лабораторная № 5</span>
+      <a href="assets/model.glb" download="dragon.glb">
+        Скачать экспонат ↓
+      </a>
+    </footer>
+  </div>
+
+  <script>
+    const dragon = document.querySelector("#dragon");
+    const rotation = document.querySelector("#rotation");
+    const reset = document.querySelector("#reset");
+    const status = document.querySelector("#status");
+
+    function updateRotationButton() {
+      rotation.textContent = dragon.autoRotate
+        ? "Остановить вращение"
+        : "Включить вращение";
+
+      rotation.setAttribute(
+        "aria-pressed",
+        String(dragon.autoRotate)
+      );
+    }
+
+    customElements.whenDefined("model-viewer").then(() => {
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        dragon.autoRotate = false;
+      }
+
+      updateRotationButton();
+
+      rotation.addEventListener("click", () => {
+        dragon.autoRotate = !dragon.autoRotate;
+        updateRotationButton();
+      });
+
+      reset.addEventListener("click", () => {
+        dragon.cameraOrbit = "25deg 75deg auto";
+        dragon.cameraTarget = "auto auto auto";
+        dragon.fieldOfView = "auto";
+      });
+
+      function showReady() {
+        status.textContent =
+          "Экспонат готов к изучению · AR доступна на совместимых устройствах";
+      }
+
+      dragon.addEventListener("load", showReady);
+
+      if (dragon.loaded) {
+        showReady();
+      }
+
+      dragon.addEventListener("error", () => {
+        status.textContent =
+          "Не удалось загрузить модель. Проверьте файл assets/model.glb.";
+      });
+
+      dragon.addEventListener("ar-status", (event) => {
+        if (event.detail.status === "failed") {
+          status.textContent =
+            "AR не запустилась. Проверьте поддержку устройства и HTTPS.";
+        }
+      });
+    });
+
+    setTimeout(() => {
+      if (!customElements.get("model-viewer")) {
+        status.textContent =
+          "Просмотрщик не загрузился. Проверьте интернет и обновите страницу.";
+      }
+    }, 15000);
+  </script>
+</body>
+</html>
