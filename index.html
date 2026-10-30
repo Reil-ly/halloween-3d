@@ -387,7 +387,7 @@
         </div>
 
         <p class="note">
-          Исследуйте экспонат: перетаскивайте для вращения,
+          Запустите анимацию пробуждения: дракон приподнимается, раскрывает крылья и выполняет два взмаха. Перетаскивайте для вращения,
           используйте колесо мыши для приближения.
           На телефоне — жест двумя пальцами. Нажмите на точки 1–3, чтобы прочитать описания.
         </p>
@@ -401,7 +401,8 @@
 
           <model-viewer
  id="dragon"
- src="assets/model.glb"
+ animation-name="Пробуждение древнего дракона"
+ src="assets/dragon_awakening.glb"
  alt="Скелетный дракон с розово-металлическим материалом, крыльями и длинным хвостом"
  camera-controls
  auto-rotate
@@ -422,14 +423,14 @@
  min-camera-orbit="auto 25deg 1.64m"
  max-camera-orbit="auto 100deg auto"
  min-field-of-view="15.67deg">
-<button class="Hotspot" type="button" aria-label="Череп - рога и массивная челюсть" aria-expanded="false" slot="hotspot-2" data-position="-0.05406165809539337m 0.591840713658594m 0.3932502903997232m" data-normal="-0.0712327835613593m 0.9094701332366708m 0.4096217368458037m" data-visibility-attribute="visible">
-          <span aria-hidden="true">1</span><div class="HotspotAnnotation">Череп - рога и массивная челюсть</div>
+<button class="Hotspot" type="button" aria-label="Череп - рога и массивная челюсть" aria-expanded="false" slot="hotspot-2" data-visibility-attribute="visible" data-surface="0 0 243382 246380 243372 0 0 1">
+          <span aria-hidden="true">1</span><span class="HotspotAnnotation">Череп - рога и массивная челюсть</span>
       </button>
-<button class="Hotspot" type="button" aria-label="Крылья - широкие перепонки с разрывами" aria-expanded="false" slot="hotspot-3" data-position="0.2672831480006597m 0.5453591300132029m 0.12410942117793806m" data-normal="0.18852799257078318m 0.4709387919559547m -0.861785269222152m" data-visibility-attribute="visible">
-          <span aria-hidden="true">2</span><div class="HotspotAnnotation">Крылья - широкие перепонки с разрывами</div>
+<button class="Hotspot" type="button" aria-label="Крылья - широкие перепонки с разрывами" aria-expanded="false" slot="hotspot-3" data-visibility-attribute="visible" data-surface="0 0 790583 794202 794468 1 0 0">
+          <span aria-hidden="true">2</span><span class="HotspotAnnotation">Крылья - широкие перепонки с разрывами</span>
       </button>
-<button class="Hotspot" type="button" aria-label="Хвост - цепь позвонков с пламенем на конце" aria-expanded="false" slot="hotspot-4" data-position="0.11333711083294806m 0.08531854328418242m -0.24267509479700589m" data-normal="0.3624812501391706m 0.8838337257218282m -0.2957114955056984m" data-visibility-attribute="visible">
-          <span aria-hidden="true">3</span><div class="HotspotAnnotation">Хвост - цепь позвонков с пламенем на конце</div>
+<button class="Hotspot" type="button" aria-label="Хвост - цепь позвонков с пламенем на конце" aria-expanded="false" slot="hotspot-4" data-visibility-attribute="visible" data-surface="0 0 614453 614461 614465 1 0 0">
+          <span aria-hidden="true">3</span><span class="HotspotAnnotation">Хвост - цепь позвонков с пламенем на конце</span>
       </button>
 
 
@@ -440,6 +441,10 @@
         </div>
 
         <div class="controls">
+          <button class="control" id="animation" aria-pressed="false">
+            Запустить анимацию
+          </button>
+          <button class="control" id="replay">Повторить анимацию</button>
           <button
             class="control"
             id="rotation"
@@ -459,8 +464,8 @@
     </main>
 
     <footer>
-      <span>Учебный проект · XR-технологии · Лабораторная № 5</span>
-      <a href="assets/model.glb" download="dragon.glb">
+      <span>Учебный проект · XR-технологии · Лабораторная № 6</span>
+      <a href="assets/dragon_awakening.glb" download="dragon.glb">
         Скачать экспонат ↓
       </a>
     </footer>
@@ -468,6 +473,8 @@
 
   <script>
     const dragon = document.querySelector("#dragon");
+    const animationButton = document.querySelector("#animation");
+    const replayButton = document.querySelector("#replay");
     const rotation = document.querySelector("#rotation");
     const reset = document.querySelector("#reset");
     const status = document.querySelector("#status");
@@ -506,6 +513,29 @@
 
       updateRotationButton();
 
+      function updateAnimationButton() {
+        const playing = !dragon.paused;
+        animationButton.textContent = playing ? "Остановить анимацию" : "Запустить анимацию";
+        animationButton.setAttribute("aria-pressed", String(playing));
+      }
+
+      animationButton.addEventListener("click", () => {
+        if (!dragon.loaded) return;
+        if (dragon.paused) dragon.play();
+        else dragon.pause();
+        updateAnimationButton();
+      });
+
+      replayButton.addEventListener("click", () => {
+        if (!dragon.loaded) return;
+        dragon.currentTime = 0;
+        dragon.play();
+        updateAnimationButton();
+      });
+
+      dragon.addEventListener("play", updateAnimationButton);
+      dragon.addEventListener("pause", updateAnimationButton);
+
       rotation.addEventListener("click", () => {
         dragon.autoRotate = !dragon.autoRotate;
         updateRotationButton();
@@ -514,12 +544,14 @@
       reset.addEventListener("click", () => {
         dragon.cameraOrbit = "-63.64deg 66.68deg 2.428m";
         dragon.cameraTarget = "-0.08m 0.3412m 0.0953m";
-        dragon.fieldOfView = "30deg";
+        dragon.fieldOfView = window.matchMedia("(max-width: 480px)").matches ? "40deg" : "30deg";
       });
 
       function showReady() {
-        status.textContent =
-          "Экспонат готов к изучению · AR доступна на совместимых устройствах";
+        updateAnimationButton();
+        status.textContent = dragon.availableAnimations.includes("Пробуждение древнего дракона")
+          ? "Модель готова · анимация «Пробуждение древнего дракона» доступна"
+          : "Модель загружена, но анимационный клип не обнаружен";
       }
 
       dragon.addEventListener("load", showReady);
@@ -530,7 +562,7 @@
 
       dragon.addEventListener("error", () => {
         status.textContent =
-          "Не удалось загрузить модель. Проверьте файл assets/model.glb.";
+          "Не удалось загрузить модель. Проверьте файл assets/dragon_awakening.glb.";
       });
 
       dragon.addEventListener("ar-status", (event) => {
@@ -548,5 +580,8 @@
       }
     }, 15000);
   </script>
+  <script type="module" src="animation-support.js"></script>
 </body>
 </html>
+
+
